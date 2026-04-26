@@ -64,27 +64,31 @@ namespace ProcessingModule
 
                 foreach (IConfigItem item in configuration.GetConfigurationItems())
                 {
-                    // analogne (200 i 2500) - svake 4 sekunde
-                    if ((item.StartAddress == 200 || item.StartAddress == 2500) && counter % 4 == 0)
+                    bool isAnalog = item.RegistryType == PointType.ANALOG_INPUT
+                                 || item.RegistryType == PointType.ANALOG_OUTPUT;
+
+                    bool isDigital = item.RegistryType == PointType.DIGITAL_OUTPUT
+                                  || item.RegistryType == PointType.DIGITAL_INPUT;
+
+                    // analogne velicine se citaju svake 4 sekunde
+                    if (isAnalog && counter % 4 == 0)
                     {
                         processingManager.ExecuteReadCommand(
                             item,
-                            counter,
-                            41,
+                            configuration.GetTransactionId(),
+                            configuration.UnitAddress,
                             item.StartAddress,
-                            item.NumberOfRegisters
-                        );
+                            item.NumberOfRegisters);
                     }
-                    // digitalne (2300, 2302, 2305, 2306) - svake 3 sekunde
-                    else if ((item.StartAddress == 2300 || item.StartAddress == 2302 || item.StartAddress == 2305 || item.StartAddress == 2306) && counter % 3 == 0)
+                    // digitalne velicine se citaju svake 3 sekunde
+                    else if (isDigital && counter % 3 == 0)
                     {
                         processingManager.ExecuteReadCommand(
                             item,
-                            counter,
-                            41,
+                            configuration.GetTransactionId(),
+                            configuration.UnitAddress,
                             item.StartAddress,
-                            item.NumberOfRegisters
-                        );
+                            item.NumberOfRegisters);
                     }
                 }
 
